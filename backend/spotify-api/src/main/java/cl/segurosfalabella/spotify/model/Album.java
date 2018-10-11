@@ -21,9 +21,7 @@ public class Album {
     }
 
     
-    /**
-     * @return the images
-     */
+    
     public List<Image> getImages() {
         return images;
     }

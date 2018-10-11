@@ -1,6 +1,6 @@
 package cl.segurosfalabella.spotify.core;
 
-public interface SpotifyRequestHandler<T,I> {
+public interface SpotifyRequestHandler {
 
-   public T handle(I action);
+   public SpotifyResponse handle(SpotifyRequest request);
 }

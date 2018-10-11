@@ -1,38 +1,40 @@
 package cl.segurosfalabella.spotify.spotifyapi;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import cl.segurosfalabella.spotify.core.SpotifyRequest;
+import cl.segurosfalabella.spotify.core.SpotifyRequestHandler;
+import cl.segurosfalabella.spotify.core.SpotifyResponse;
 
-import cl.segurosfalabella.spotify.model.Album;
 
 @RestController
 public class SpotifyApiController {
 
+   
+
+    @Qualifier(value="compositeRequestHandler")
     @Autowired
-    private RestTemplate spotifyRestTemplate;
+    private SpotifyRequestHandler handler;
+    
 
-    @GetMapping(value="/api/albums")
-    public Object  searchQ() throws IOException{
+    @GetMapping(value="/api/albums" , produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SpotifyResponse>  searchQ(@RequestParam(value="album",required=false) String album,@RequestParam(value="artist",required=false) String artist,@RequestParam(value="offset",required=false) Integer offset){
 
-        String content=spotifyRestTemplate.getForEntity("https://api.spotify.com/v1/search?q=Muse&type=album",String.class).getBody();
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-       
-        JsonNode response = mapper.readTree(content); 
-        
+        SpotifyRequest request=  new SpotifyRequest();
+                       request.setAlbum(album);
+                       request.setArtist(artist);
+                       if(offset!=null)
+                       request.setOffset(offset);
 
-      ArrayList<Album> albums= mapper.readValue(response.path("albums").path("items").toString(), new TypeReference<ArrayList<Album>>(){});
-       // ArrayList<Album> albums = ,new TypeReference<ArrayList<Album>>(){}.getClass());
-        return albums ;
+            if(request.getSearchKey().equalsIgnoreCase("[]"))
+                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).build();
+
+        return ResponseEntity.ok(handler.handle(request)) ;
     }
 
 }
