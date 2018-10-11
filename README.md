@@ -2,7 +2,7 @@
 test app
 
 
-## Setting up api server
+## Getting Starter
 
 ```sh
 git clone https://github.com/fagurto/spotify-app-sf.git
