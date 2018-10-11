@@ -25,3 +25,13 @@ npm install
 npm  start
 
 ```
+
+### Tech
+- java 8
+- maven 3.5.4
+- spring-boot
+- es6
+- npm 6.4.1
+- nodejs 10.11.0
+- create-react-app
+- reacstrap
